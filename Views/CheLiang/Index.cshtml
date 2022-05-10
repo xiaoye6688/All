@@ -1,0 +1,115 @@
+﻿@model List<CheLiangGuanLi.Models.CarRecord>
+@{
+    ViewBag.Title = "Index";
+}
+
+<script type="text/javascript">
+    //添加事件
+    function tj() {
+        location.href = "/CheLiang/AddChe";
+    }
+
+    //删除事件
+    function shanchu(id) {
+        if (confirm("您确定要删除吗？")) {
+            $.ajax({
+                url: '/CheLiang/ShanChu',
+                type: 'post',
+                data: { "cid": id },
+                dataType: 'json',
+                success: function (msg) {
+                    if (msg > 0) { //删除成功
+                        alert("删除成功");
+                        location.href = "/CheLiang/Index";
+                    }
+                    else {  //删除失败
+                        alert("删除失败");
+                        location.href = "/CheLiang/Index";
+                    }
+                }
+            });
+        }
+    }
+    //修改事件
+    function xiugai(id) {
+        location.href = "/CheLiang/EditChe/" + id;
+    }
+
+    //授权事件
+    function shouquan(id) {
+        $.ajax({
+            url: '/CheLiang/ShouQuan',
+            type: 'post',
+            data: { "cid": id },
+            dataType: 'json',
+            success: function (msg) {
+                if (msg > 0) { //授权成功
+                    alert("授权成功");
+                    location.href = "/CheLiang/Index";
+                }
+                else {  //授权失败
+                    alert("授权失败");
+                    location.href = "/CheLiang/Index";
+                }
+            }
+        });
+    }
+</script>
+<div>
+    <h2>车辆出入记录列表</h2>
+    <input type="button" value="添加" class="btn btn-primary"  style="float:right;" onclick="tj()"/>
+</div>
+<form method="post" action="/CheLiang/Index">
+    <input id="Text1" type="text" placeholder="车牌号" name="CarNo" />
+    <input id="Text1" type="text" placeholder="电话"  name="Mobile"/>
+    <input id="Button1" type="submit" value="查询" class="btn btn-danger" />
+</form>
+<table class="table table-striped">
+     <thead>
+         <tr>
+             <th>车辆编号</th>
+             <th>车主姓名</th>
+             <th>小区名称</th>
+             <th>车辆名称</th>
+             <th>车牌号</th>
+             <th>车型</th>
+             <th>车主联系电话</th>
+             <th>驶入/驶出时间</th>
+             <th>进出状态</th>
+             <th>停车类型</th>
+             <th>操作</th>
+         </tr>
+     </thead>
+     <tbody>
+         @{
+             foreach (var item in Model)
+             {
+                  <tr>
+                      <th>@item.CarId</th>
+                      <th>@item.Name</th>
+                      <th>@item.CommunityInfo.CommunityName</th>
+                      <th>@item.CarName</th>
+                      <th>@item.CarNo</th>
+                      <th>@item.CarType</th>
+                      <th>@item.Mobile</th>
+                      <th>@item.DriveTime</th>
+                      <th>@(item.State==1? "驶入" : "驶出")</th>
+                      <th>@(item.Type==1? "已授权" : "临时停车")</th>
+                      <th>
+                          <input id="Button1" type="button" value="修改" class="btn btn-danger" onclick="xiugai(@item.CarId)" />
+                          <input id="Button1" type="button" value="删除" class="btn btn-warning"  onclick="shanchu(@item.CarId)" />
+                          @{
+                              if (item.Type == 2)
+                              {
+                                  <input id="Button1" type="button" value="授权" class="btn btn-success"  onclick="shouquan(@item.CarId)" />
+                              }
+                          }
+                      </th>
+                  </tr>
+             }
+         }
+     </tbody>
+</table>
+
+
+ 
